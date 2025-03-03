@@ -21,99 +21,86 @@ export const eulerMejorado = ({ decimales, iteraciones, h, xn, yn, f }) => {
       xn = !xn ? 0 : xn
       yn = !yn ? 0 : yn 
   
-      const newResult = {
-        x: xn,
-        y: yn
-      }
-      results.push(newResult)
+      results.push({x:xn,y:yn})
     }
   
     return results
 }
 
-export const newtonRaphson = ({ decimales, xn, f }) => {
+export const newtonRaphson = ({ decimales,x0, f }) => {
   const results = [];
+  let epsilon = Math.pow(10, -decimales);
 
-  const epsilon = Math.pow(10, -decimales);
-  
-  const df = math.derivative(f, 'x');
+  let df = math.derivative(f, 'x'); // Calcula la derivada simbólica
 
-  let error;
-  let iter = 0;
+  let x1, error, iter = 0,maxIter = 100;
 
-  try {
-    do {
-      const fValue = math.evaluate(f, { x: xn });
-      const dfValue = df.evaluate({ x: xn });
+  do {
+    let fValue = math.evaluate(f, { x: x0 });
+    let dfValue = df.evaluate({ x: x0 });
 
-      if (dfValue === 0) {
-        throw new Error('La derivada es 0, no se puede continuar con el método Newton-Raphson.');
-      }
+    if (dfValue === 0) {
+      console.log("Derivada cero, método no aplicable.");
+      results.push(fValue)
+      break
+    }
 
-      let x1 = xn - fValue / dfValue;
-      error = Math.abs(x1 - xn);
-      x1 = !x1 ? 0 : x1;
-      results.push(x1);
-      xn = x1;
-      iter++;
-    } while (error > epsilon);
+    x1 = x0 - fValue / dfValue;
+    error = Math.abs(x1 - x0);
 
-    return results;
-  } catch (err) {
-    Swal.fire({
-      title: 'Error',
-      text: err.message,
-      icon: 'error'
-    })
-    return [];
-  }
+    x0 = x1;
+    results.push(x1);
+
+    iter++;
+    if (iter >= maxIter) {
+      console.log("Número máximo de iteraciones alcanzado.");
+      break
+    }
+
+  } while (error > epsilon);
+
+  return results;
 };
 
-export const rungeKutta = ({ decimales, h, xn, yn, xf, f }) => {
-    const results = []
-  
-    while (xn < xf) {
-      if (xn + h > xf) {
-        h = xf - xn;
-      }
+export const rungeKutta = ({ h,n,x0,y0,f }) => {
+  let x = x0;
+  let y = y0;
+  const results = [{ x, y }];
 
-      let k1 = h * math.evaluate(f, { x: xn, y: yn })
-  
-      let k2 = h * math.evaluate(f, { x: xn + h / 2, y: yn + k1 / 2 })
-  
-      let k3 = h * math.evaluate(f, { x: xn + h / 2, y: yn + k2 / 2 })
-  
-      let k4 = h * math.evaluate(f, { x: xn + h, y: yn + k3 })
-  
-      xn = parseFloat(
-        (xn + h).toFixed(decimales)
-      )
+  // Convertir la ecuación en una función evaluable
+  const parsedF = math.parse(f);
+  const compiledF = parsedF.compile();
 
-      yn = parseFloat(
-        (yn + (k1 + 2 * k2 + 2 * k3 + k4) / 6).toFixed(decimales)
-      ) 
+  for (let i = 0; i < n; i++) {
+    let k1 = math.multiply(h, compiledF.evaluate({ x, y }));
+    let k2 = math.multiply(h, compiledF.evaluate({ x: x + h / 2, y: math.add(y, math.multiply(0.5, k1)) }));
+    let k3 = math.multiply(h, compiledF.evaluate({ x: x + h / 2, y: math.add(y, math.multiply(0.5, k2)) }));
+    let k4 = math.multiply(h, compiledF.evaluate({ x: x + h, y: math.add(y, k3) }));
 
-      const newResult = {
-        x: xn,
-        y: yn
-      }
-      results.push(newResult)
-    }
-  
-    return results
+    let deltaY = math.multiply(1 / 6, math.add(k1, math.multiply(2, k2), math.multiply(2, k3), k4));
+
+    y = math.add(y, deltaY);
+    x = math.add(x, h);
+
+    results.push({ x, y });
+  }
+
+  return results;
 }
 
 export const isValidEquation = (equation) => {
   try {
-    const parsed = math.parse(equation);
+    const parsed = math.parse(equation); 
+    const compiled = parsed.compile();
+
     const scope = { x: 0, y: 0 };
-    parsed.evaluate(scope);
+    compiled.evaluate(scope);
 
     return true;
   } catch (e) {
     Swal.fire({
       title: 'Error',
-      text: `La ecuación no es válida`,
+      text: `La ecuación no es válida: ${e.message}`,
       icon: 'error',
     });
 

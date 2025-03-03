@@ -40,7 +40,7 @@ export const NewtonRaphson = () => {
         const results = newtonRaphson(
             {
                 decimales: parseInt(precisionNumber),
-                xn: parseFloat(initialValueX),
+                x0: parseFloat(initialValueX),
                 f: func
             }
         )
