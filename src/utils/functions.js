@@ -65,7 +65,7 @@ export const newtonRaphson = ({ decimales,x0, f }) => {
 export const rungeKutta = ({ h,n,x0,y0,f }) => {
   let x = x0;
   let y = y0;
-  const results = [{ x, y }];
+  const results = [];
 
   // Convertir la ecuación en una función evaluable
   const parsedF = math.parse(f);
