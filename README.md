@@ -31,13 +31,13 @@ Este proyecto contiene una aplicación de React que implementa varios métodos n
 Para correr la aplicación en modo de desarrollo, utiliza el siguiente comando:
 
 ```bash
-npm start
+npm run dev
 ```
 
-o si usas yarn:
+o si usas pnpm:
 
 ```bash
-yarn start
+pnpm run dev
 ```
 
 La aplicación se abrirá en tu navegador en `http://localhost:5173`.
