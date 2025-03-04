@@ -5,7 +5,7 @@ Este proyecto contiene una aplicación de React que implementa varios métodos n
 ## Requisitos
 
 - Node.js
-- npm o yarn
+- npm o pnpm
 
 ## Instalación
 
@@ -21,9 +21,9 @@ Este proyecto contiene una aplicación de React que implementa varios métodos n
    ```bash
    npm install
    ```
-   o si usas yarn:
+   o si usas pnpm:
    ```bash
-   yarn install
+   pnpm install
    ```
 
 ## Ejecución
