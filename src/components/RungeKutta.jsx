@@ -17,19 +17,14 @@ export const RungeKutta = () => {
         const data = Object.fromEntries(formData)
 
         const {
-            'iteration-number': iterationNumber,
             'step-size': stepSize,
             'initial-value-x': initialValueX,
             'initial-value-y': initialValueY,
+            'final-value-x': finalValueX
         } = data
 
         if (stepSize < 0) {
             Swal.fire('Error', 'El tamaño de paso debe de ser un decimal mayor a 0', 'error')
-            return
-        }
-
-        if (iterationNumber < 0) {
-            Swal.fire('Error', 'El número de iteraciones debe ser mayor a 0', 'error')
             return
         }
 
@@ -50,9 +45,9 @@ export const RungeKutta = () => {
 
         const results = rungeKutta({
             h: parseFloat(stepSize),
-            n: parseFloat(iterationNumber),
             x0: parseFloat(initialValueX),
             y0: parseFloat(initialValueY),
+            xn: parseFloat(finalValueX),
             f: func
         })
 
@@ -66,12 +61,12 @@ export const RungeKutta = () => {
         <Layout>
             <div className='p-4'>
                 <h1 className='text-center font-bold text-2xl'>Runge Kutta</h1>
-                <div className='grid gap-10 grid-cols-2 mt-4'>
+                <div className='flex flex-col gap-10 mt-4'>
                     <form className='flex flex-col' onSubmit={handleSubmit}>
                         <CustomInput name='step-size' text='Tamaño de paso' type='number' />
-                        <CustomInput name='iteration-number' text='Numero de iteraciones' type='number' />
                         <CustomInput name='initial-value-x' text='Valor inicial de x' type='number' />
                         <CustomInput name='initial-value-y' text='Valor inicial de y' type='number' />
+                        <CustomInput name='final-value-x' text='Valor final de x' type='number' />
                         <label className="block text-gray-700 text-sm font-bold mb-2">Función</label>
                         <EditableMathField latex={latex} onChange={(mathField) => {
                             setLatex(mathField.latex())
@@ -80,12 +75,16 @@ export const RungeKutta = () => {
                         <button className='p-4 mt-4 bg-green-400 border rounded' type='submit'>Calcular</button>
                     </form>
                     <section>
-                        <table className='border-collapse bg-white border border-gray-200'>
+                        <table className='border-collapse w-100 bg-white border border-gray-200'>
                             <thead>
                                 <tr>
                                     <th className='py-2 px-4 border-b'>Iteración</th>
                                     <th className='py-2 px-4 border-b'>X</th>
                                     <th className='py-2 px-4 border-b'>Y</th>
+                                    <th className='py-2 px-4 border-b'>K1</th>
+                                    <th className='py-2 px-4 border-b'>K2</th>
+                                    <th className='py-2 px-4 border-b'>K3</th>
+                                    <th className='py-2 px-4 border-b'>K4</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -94,6 +93,10 @@ export const RungeKutta = () => {
                                         <td className='py-2 px-4 border-b'>{index + 1}</td>
                                         <td className='py-2 px-4 border-b'>{result.x}</td>
                                         <td className='py-2 px-4 border-b'>{result.y}</td>
+                                        <td className='py-2 px-4 border-b'>{result.k1}</td>
+                                        <td className='py-2 px-4 border-b'>{result.k2}</td>
+                                        <td className='py-2 px-4 border-b'>{result.k3}</td>
+                                        <td className='py-2 px-4 border-b'>{result.k4}</td>
                                     </tr>
                                 ))}
                             </tbody>

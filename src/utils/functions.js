@@ -1,30 +1,30 @@
 import Swal from "sweetalert2"
 import * as math from "mathjs"
 
-export const eulerMejorado = ({ decimales, iteraciones, h, xn, yn, f }) => {
+export const eulerMejorado = ({ h, x0, y0, xn, f }) => {
     const results = []
   
-    for (let i = 0; i < iteraciones; i++) {
-      let xna = xn + h
+    while (x0 < xn) {
+        let xna = x0 + h;
   
-      let fxy = math.evaluate(f, { x: xn, y: yn })
+        let fxy = math.evaluate(f, { x: x0, y: y0 });
   
-      let yna = yn + h * fxy
+        let yna = y0 + h * fxy;
   
-      let fxy2 = math.evaluate(f, { x: xna, y: yna })
+        let fxy2 = math.evaluate(f, { x: xna, y: yna });
   
-      let yvar = yn + h * (fxy + fxy2) / 2
+        let yvar = y0 + h * (fxy + fxy2) / 2;
   
-      xn = parseFloat(xna.toFixed(decimales))
-      yn = parseFloat(yvar.toFixed(decimales))
-
-      xn = !xn ? 0 : xn
-      yn = !yn ? 0 : yn 
+        x0 = parseFloat(xna);
+        y0 = parseFloat(yvar);
   
-      results.push({x:xn,y:yn})
+        x0 = !x0 ? 0 : x0;
+        y0 = !y0 ? 0 : y0;
+  
+        results.push({ x: x0, y: y0 });
     }
   
-    return results
+    return results;
 }
 
 export const newtonRaphson = ({ decimales,x0, f }) => {
@@ -62,27 +62,23 @@ export const newtonRaphson = ({ decimales,x0, f }) => {
   return results;
 };
 
-export const rungeKutta = ({ h,n,x0,y0,f }) => {
+export const rungeKutta = ({ h, x0, y0, xn, f }) => {
   let x = x0;
   let y = y0;
   const results = [];
 
-  // Convertir la ecuación en una función evaluable
-  const parsedF = math.parse(f);
-  const compiledF = parsedF.compile();
+  while (x < xn) {
+      let k1 = math.multiply(h, math.evaluate(f, { x, y }));
+      let k2 = math.multiply(h, math.evaluate(f, { x: x + h / 2, y: math.add(y, math.multiply(0.5, k1)) }));
+      let k3 = math.multiply(h, math.evaluate(f, { x: x + h / 2, y: math.add(y, math.multiply(0.5, k2)) }));
+      let k4 = math.multiply(h, math.evaluate(f, { x: x + h, y: math.add(y, k3) }));
 
-  for (let i = 0; i < n; i++) {
-    let k1 = math.multiply(h, compiledF.evaluate({ x, y }));
-    let k2 = math.multiply(h, compiledF.evaluate({ x: x + h / 2, y: math.add(y, math.multiply(0.5, k1)) }));
-    let k3 = math.multiply(h, compiledF.evaluate({ x: x + h / 2, y: math.add(y, math.multiply(0.5, k2)) }));
-    let k4 = math.multiply(h, compiledF.evaluate({ x: x + h, y: math.add(y, k3) }));
+      let deltaY = math.multiply(1 / 6, math.add(k1, math.multiply(2, k2), math.multiply(2, k3), k4));
 
-    let deltaY = math.multiply(1 / 6, math.add(k1, math.multiply(2, k2), math.multiply(2, k3), k4));
+      y = math.add(y, deltaY);
+      x = parseFloat(x + h);
 
-    y = math.add(y, deltaY);
-    x = math.add(x, h);
-
-    results.push({ x, y });
+      results.push({ x, y, k1, k2, k3, k4 });
   }
 
   return results;
