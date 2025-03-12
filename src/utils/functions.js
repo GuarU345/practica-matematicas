@@ -67,7 +67,7 @@ export const rungeKutta = ({ h, x0, y0, xn, f }) => {
   let y = y0;
   const results = [];
 
-  while (x < xn) {
+  for (let i = 0;i < xn;i++) {
       let k1 = math.multiply(h, math.evaluate(f, { x, y }));
       let k2 = math.multiply(h, math.evaluate(f, { x: x + h / 2, y: math.add(y, math.multiply(0.5, k1)) }));
       let k3 = math.multiply(h, math.evaluate(f, { x: x + h / 2, y: math.add(y, math.multiply(0.5, k2)) }));
