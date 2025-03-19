@@ -4,7 +4,7 @@ import * as math from "mathjs"
 export const eulerMejorado = ({ h, x0, y0, xn, f }) => {
     const results = []
   
-    while (x0 < xn) {
+    for (let i = 0;i < xn;i++) {
         let xna = x0 + h;
   
         let fxy = math.evaluate(f, { x: x0, y: y0 });
